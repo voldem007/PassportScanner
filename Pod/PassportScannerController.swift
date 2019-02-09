@@ -31,6 +31,8 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     /// Set accuracy that is required for the scan. 1 = all checksums should be ok
     @objc public var accuracy: Float = 1
     
+    @objc public var isAutoMode: Bool = true
+    
     /// If false then apply filters in post processing, otherwise instead of in camera preview
     @objc public var showPostProcessingFilters = true
     
@@ -45,7 +47,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
 
     // Can be sat as a callback function
     @objc public var scannerDidCompleteWith:((MRZParser?) -> ())?
-
+    
     // The size and location of the scan area so that you could create your own custom interface.
     var ocrParsingRect: CGRect = CGRect(x: 350, y: 60, width: 350, height: 1800)
 
@@ -91,9 +93,6 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
      
      :returns: Returns .portrait
      */
-    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        get { return .portrait }
-    }
     /**
      Hide the status bar during scan
      
@@ -222,6 +221,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
                 self.view.addSubview(renderView)
             }else{
                 renderView.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height)
+                renderView.orientation = .landscapeRight
             }
             
             if !showPostProcessingFilters {
@@ -359,7 +359,9 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
                 DispatchQueue.global().async() {
                     if self.processImage(sourceImage: sourceImage) { return }
                     // Not successful, start another scan
-                    self.scanning()
+                    if self.isAutoMode {
+                        self.scanning()
+                    }
                 }
             }
             self.crop --> self.pictureOutput

@@ -23,11 +23,18 @@ class MyScanViewController: PassportScannerController {
     override func viewDidLoad() {
         super.viewDidLoad();
         self.debug = true // So that we can see what's going on (scan text and quality indicator)
-        self.accuracy = 1  // 1 = all checksums should pass (is the default so we could skip this line)
+        self.accuracy = 0.9//1  // 1 = all checksums should pass (is the default so we could skip this line)
         self.mrzType = .auto // Performs a little better when set to td1 or td3
-        self.showPostProcessingFilters = true // Set this to true to to give you a good indication of the scan quality
+        self.showPostProcessingFilters = false// true // Set this to true to to give you a good indication of the scan quality
     }
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .landscapeRight
+    }
+    
+    override var shouldAutorotate: Bool {
+        return true
+    }
     
     /**
     For now just start scanning the moment this view is loaded
