@@ -34,23 +34,23 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     @objc public var isAutoMode: Bool = true
     
     /// If false then apply filters in post processing, otherwise instead of in camera preview
-    @objc public var showPostProcessingFilters = true
+    @objc public var showPostProcessingFilters = false
     
     //last parsed image
     @objc public var parsedImage: UIImage?
     
     // The parsing to be applied
     @objc public var mrzType: MRZType = MRZType.auto
-
+    
     // For if you want the data on a different location than standard
     @objc public var tesseractTrainedDataAbsolutePath: String?
-
+    
     // Can be sat as a callback function
     @objc public var scannerDidCompleteWith:((MRZParser?) -> ())?
     
     // The size and location of the scan area so that you could create your own custom interface.
     var ocrParsingRect: CGRect = CGRect(x: 350, y: 60, width: 350, height: 1800)
-
+    
     // We only wan to do the setup once.
     @objc public var setupCompleted = false
     
@@ -123,8 +123,6 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         
         if self.tesseractTrainedDataAbsolutePath != nil {
             tesseract = MGTesseract(language: "eng", configDictionary: nil, configFileNames: nil, absoluteDataPath: self.tesseractTrainedDataAbsolutePath, engineMode: MGOCREngineMode.tesseractOnly)
-        }else{
-            tesseract = MGTesseract(language: "eng")
         }
         
         // Specify the crop region that will be used for the OCR
@@ -185,7 +183,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         // optimisations created based on https://github.com/gali8/Tesseract-OCR-iOS/wiki/Tips-for-Improving-OCR-Results
         
         // tesseract OCR settings
-        self.tesseract.setVariableValue("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ<", forKey: "tessedit_char_whitelist")
+        self.tesseract.setVariableValue("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN OPQRSTUVWXYZ<", forKey: "tessedit_char_whitelist")
         self.tesseract.delegate = self
         
         self.tesseract.rect = CGRect(x: 0, y: 0, width: ocrParsingRect.size.height / 2, height: ocrParsingRect.size.width / 2)
@@ -216,7 +214,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
             camera = try Camera(sessionPreset: AVCaptureSession.Preset.hd1920x1080)
             camera.location = PhysicalCameraLocation.backFacing
             
-            if renderView==nil {
+            if renderView == nil {
                 renderView = RenderView.init(frame: self.view.bounds)
                 self.view.addSubview(renderView)
             }else{
@@ -256,30 +254,31 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
             return
         }
         
-        DispatchQueue.global(qos: .background).async {
-            self.averageColorFilter = GPUImageAverageColor()
-            self.averageColorFilter.colorAverageProcessingFinishedBlock = {red, green, blue, alpha, time in
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.averageColorFilter = GPUImageAverageColor()
+            strongSelf.averageColorFilter.colorAverageProcessingFinishedBlock = {red, green, blue, alpha, time in
                 let lighting = blue + green + red
-                let currentExposure = self.lastExposure
+                let currentExposure = strongSelf.lastExposure
                 
                 // The stable color is between 2.75 and 2.85. Otherwise change the exposure
                 if lighting < 2.75 {
-                    self.lastExposure = currentExposure + (2.80 - lighting) * 2
+                    strongSelf.lastExposure = currentExposure + (2.80 - lighting) * 2
                 }
                 if lighting > 2.85 {
-                    self.lastExposure = currentExposure - (lighting - 2.80) * 2
+                    strongSelf.lastExposure = currentExposure - (lighting - 2.80) * 2
                 }
                 
-                if self.lastExposure > 2 {
-                    self.lastExposure = CGFloat(self.defaultExposure)
+                if strongSelf.lastExposure > 2 {
+                    strongSelf.lastExposure = CGFloat(strongSelf.defaultExposure)
                 }
-                if self.lastExposure < -2 {
-                    self.lastExposure = CGFloat(self.defaultExposure)
+                if strongSelf.lastExposure < -2 {
+                    strongSelf.lastExposure = CGFloat(strongSelf.defaultExposure)
                 }
                 
-                self.averageColorFilter = nil
+                strongSelf.averageColorFilter = nil
             }
-            self.averageColorFilter.image(byFilteringImage: image)
+            strongSelf.averageColorFilter.image(byFilteringImage: image)
         }
     }
     
@@ -350,21 +349,23 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     }
     
     private func scanning() {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            guard let strongSelf = self else { return }
             //print("Start OCR")
-            self.pictureOutput = PictureOutput()
-            self.pictureOutput.encodedImageFormat = .png
-            self.pictureOutput.onlyCaptureNextFrame = true
-            self.pictureOutput.imageAvailableCallback = { sourceImage in
-                DispatchQueue.global().async() {
-                    if self.processImage(sourceImage: sourceImage) { return }
+            strongSelf.pictureOutput = PictureOutput()
+            strongSelf.pictureOutput.encodedImageFormat = .png
+            strongSelf.pictureOutput.onlyCaptureNextFrame = true
+            strongSelf.pictureOutput.imageAvailableCallback = { sourceImage in
+                DispatchQueue.global().async() { [weak self] in
+                    guard let strongSelf = self else { return }
+                    if strongSelf.processImage(sourceImage: sourceImage) { return }
                     // Not successful, start another scan
-                    if self.isAutoMode {
-                        self.scanning()
+                    if strongSelf.isAutoMode {
+                        strongSelf.scanning()
                     }
                 }
             }
-            self.crop --> self.pictureOutput
+            strongSelf.crop --> strongSelf.pictureOutput
         }
     }
     
@@ -441,23 +442,24 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         if  mrz.isValid() < self.accuracy {
             print("Scan quality insufficient : \(mrz.isValid())")
             
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
                 
-                self.parsedImage = self.imageFromView(myView: self.renderView)
+                strongSelf.parsedImage = strongSelf.imageFromView(myView: strongSelf.renderView)
                 
             }
         } else {
-            DispatchQueue.main.async {
-                let subviews = self.renderView.subviews
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                
+                let subviews = strongSelf.renderView.subviews
                 for view in subviews {
                     view.removeFromSuperview()
                 }
-                self.parsedImage = self.imageFromView(myView: self.renderView)
-                self.camera.stopCapture()
-            }
-            
-            DispatchQueue.main.async {
-                self.successfulScan(mrz: mrz)
+                strongSelf.parsedImage = strongSelf.imageFromView(myView: strongSelf.renderView)
+                strongSelf.camera.stopCapture()
+                
+                strongSelf.successfulScan(mrz: mrz)
             }
             return true
         }
