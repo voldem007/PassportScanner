@@ -223,8 +223,8 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
                 self.view.addSubview(renderView)
             } else {
                 renderView.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height)
-                renderView.orientation = .landscapeRight
             }
+            renderView.orientation = .landscapeRight
             
             if !showPostProcessingFilters {
                 // Apply only the cropping
@@ -351,7 +351,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     }
     
     private func scanning() {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) { [weak self] in
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let strongSelf = self else { return }
             //print("Start OCR")
             strongSelf.pictureOutput = PictureOutput()

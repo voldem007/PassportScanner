@@ -88,14 +88,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="buY-rE-70k" userLabel="filterView" customClass="RenderView" customModule="EVGPUImage2">
-                                <rect key="frame" x="20" y="0.0" width="560" height="600"/>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="buY-rE-70k" userLabel="filterView" customClass="RenderView" customModule="EVGPUImage2">
+                                <rect key="frame" x="16" y="20" width="343" height="647"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="overlay.png" translatesAutoresizingMaskIntoConstraints="NO" id="NVV-Mh-nJH">
                                         <rect key="frame" x="0.0" y="0.0" width="560" height="600"/>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5lZ-yS-UhP">
-                                        <rect key="frame" x="25" y="510" width="32" height="65"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5lZ-yS-UhP">
+                                        <rect key="frame" x="25" y="557" width="32" height="65"/>
                                         <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="44"/>
                                         <state key="normal" title="X">
                                             <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -107,6 +107,19 @@
                                             <action selector="StopScanWithSender:" destination="qHB-Os-1wr" eventType="touchUpInside" id="Yao-Yo-5xG"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BQp-I2-JOh">
+                                        <rect key="frame" x="88" y="564" width="46" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="ZLa-LR-FXH"/>
+                                            <constraint firstAttribute="width" constant="46" id="sqM-me-e73"/>
+                                        </constraints>
+                                        <state key="normal" title="o">
+                                            <color key="titleColor" red="1" green="0.21176470589999999" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="scanManual:" destination="qHB-Os-1wr" eventType="touchUpInside" id="sZB-yG-5rt"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -114,8 +127,10 @@
                                     <constraint firstAttribute="bottom" secondItem="5lZ-yS-UhP" secondAttribute="bottom" constant="25" id="5tP-zO-eQl"/>
                                     <constraint firstItem="NVV-Mh-nJH" firstAttribute="top" secondItem="buY-rE-70k" secondAttribute="top" id="HmM-XO-Pco"/>
                                     <constraint firstItem="5lZ-yS-UhP" firstAttribute="leading" secondItem="buY-rE-70k" secondAttribute="leading" constant="25" id="ShD-zc-xd5"/>
+                                    <constraint firstAttribute="bottom" secondItem="BQp-I2-JOh" secondAttribute="bottom" constant="33" id="XZc-kU-e8M"/>
                                     <constraint firstAttribute="bottom" secondItem="NVV-Mh-nJH" secondAttribute="bottom" id="ieu-ge-Oyx"/>
                                     <constraint firstAttribute="trailing" secondItem="NVV-Mh-nJH" secondAttribute="trailing" id="w7x-kO-yVs"/>
+                                    <constraint firstItem="BQp-I2-JOh" firstAttribute="leading" secondItem="5lZ-yS-UhP" secondAttribute="trailing" constant="31" id="z1q-zd-AW8"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -137,7 +152,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="77q-Md-56S" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="276" y="-1121"/>
+            <point key="canvasLocation" x="276" y="-1121.2893553223389"/>
         </scene>
     </scenes>
     <resources>
