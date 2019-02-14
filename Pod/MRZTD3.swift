@@ -19,38 +19,38 @@ open class MRZTD3: MRZParser {
     private var _debug = false
     
     /// The document type from the 1st line of the MRZ. (start 1, len 1)
-    @objc public var documentType: String = ""
+    //@objc public var documentType: String = ""
     /// The document sub type from the 1st line of the MRZ. (start 2, len 1)
-    @objc public var documentSubType: String = ""
+    //@objc public var documentSubType: String = ""
     /// The country code from the 1st line of the MRZ (start 3, len 3)
-    @objc public var countryCode: String = ""
+    //@objc public var countryCode: String = ""
     /// The last name from the 1st line of the MRZ (start 6, len 39, until first <<)
-    @objc public var lastName: String = ""
+    //@objc public var lastName: String = ""
     /// The firstname from the 1st line of the MRZ (start 6, len 39, after first <<)
-    @objc public var firstName: String = ""
+    //@objc public var firstName: String = ""
     
     /// The passport number from the 2nd line of the MRZ. (start 1, len 9)
-    @objc public var passportNumber: String = ""
+    //@objc public var passportNumber: String = ""
     /// start 10, len 1 - validating the passportNumber
-    private var passportNumberIsValid = false
+    //private var passportNumberIsValid = false
     /// The nationality from the 2nd line of the MRZ. (start 11, len 3)
-    @objc public var nationality: String = ""
+    //@objc public var nationality: String = ""
     /// The date of birth from the 2nd line of the MRZ (start 14, len 6)
-    @objc public var dateOfBirth: Date?
+    //@objc public var dateOfBirth: Date?
     /// start 20, len 1 - validating the dateOfBirth
-    private var dateOfBirthIsValid = false
+    //private var dateOfBirthIsValid = false
     /// The sex from the 2nd line of the MRZ. (start 21, len 1)
-    @objc public var sex: String = ""
+    //@objc public var sex: String = ""
     /// The expiration date from the 2nd line of the MRZ. (start 22, len 6)
-    @objc public var expirationDate: Date?
+    //@objc public var expirationDate: Date?
     /// start 28, len 1 - validating the expirationDate
-    private var expirationDateIsValid = false
+    //private var expirationDateIsValid = false
     /// The personal number from the 2nd line of the MRZ. (start 29, len 14
-    @objc public var personalNumber: String = ""
+    //@objc public var personalNumber: String = ""
     /// start 43, len 1 - validating the personalNumber
-    private var personalNumberIsValid = false
+    //private var personalNumberIsValid = false
     // start 44, len 1 - validating passport number, date of birth, expiration date
-    private var dataIsValid = false
+    //private var dataIsValid = false
     
     
     /**

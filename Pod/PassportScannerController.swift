@@ -137,8 +137,10 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     }
     
     @objc public func startScan() {
-        self.currentCountPerSession = 0
-        scanning()
+        if !isAutoMode {
+            self.currentCountPerSession = 0
+            scanning()
+        }
     }
     
     @objc public func stopScan() {

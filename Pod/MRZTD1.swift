@@ -21,37 +21,37 @@ open class MRZTD1: MRZParser {
     private var lineLen: Int = 30;
     
     /// The document type from the 1st line of the MRZ. (start 1, len 1)
-    @objc public var documentType: String = ""
+    //@objc public var documentType: String = ""
     /// The document sub type from the 1st line of the MRZ. (start 2, len 1)
-    @objc public var documentSubType: String = ""
+    //@objc public var documentSubType: String = ""
     /// The country code from the 1st line of the MRZ (start 3, len 3)
-    @objc public var countryCode: String = ""
+    //@objc public var countryCode: String = ""
     /// The passport number from the 1nd line of the MRZ. (start 6, len 9)
-    @objc public var passportNumber: String = ""
+    //@objc public var passportNumber: String = ""
     /// Check digit start 15, len 1 - validating the passportNumber
-    private var passportNumberIsValid = false
+    //private var passportNumberIsValid = false
     
     
     /// The date of birth from the 2nd line of the MRZ (start 1, len 6)
-    @objc public var dateOfBirth: Date?
+    //@objc public var dateOfBirth: Date?
     /// start 7, len 1 - validating the dateOfBirth
-    private var dateOfBirthIsValid = false
+    //private var dateOfBirthIsValid = false
     /// The sex from the 2nd line of the MRZ. (start 8, len 1)
-    @objc public var sex: String = ""
+    //@objc public var sex: String = ""
     /// The expiration date from the 2nd line of the MRZ. (start 9, len 6)
-    @objc public var expirationDate: Date?
+    //@objc public var expirationDate: Date?
     /// start 15, len 1 - validating the expirationDate
-    private var expirationDateIsValid = false
+    //private var expirationDateIsValid = false
     /// The nationality from the 2nd line of the MRZ. (start 16, len 3)
-    @objc public var nationality: String = ""
+    //@objc public var nationality: String = ""
     // start 30, len 1 - validating line 1 and 2
-    private var dataIsValid = false
+    //private var dataIsValid = false
     
     
     /// The last name from the 1st line of the MRZ (start 1, len 30, until first <<)
-    @objc public var lastName: String = ""
+    //@objc public var lastName: String = ""
     /// The firstname from the 1st line of the MRZ (start first << len 30)
-    @objc public var firstName: String = ""
+    //@objc public var firstName: String = ""
 
     
     
