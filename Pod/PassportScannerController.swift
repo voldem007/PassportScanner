@@ -22,8 +22,8 @@ public enum MRZType: Int {
     case td3 // 2 lines - 44 chars per line
 }
 
-//@objc(PassportScannerController)
-class PassportScannerController: UIViewController, MGTesseractDelegate {
+@objc(PassportScannerController)
+open class PassportScannerController: UIViewController, MGTesseractDelegate {
     
     /// Set debug to true if you want to see what's happening
     @objc public var debug = false
@@ -92,11 +92,11 @@ class PassportScannerController: UIViewController, MGTesseractDelegate {
         }
     }()
     
-    init() {
+    public init() {
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder _: NSCoder) { fatalError() }
+    public required init?(coder _: NSCoder) { fatalError() }
     
     /**
      Hide the status bar during scan
