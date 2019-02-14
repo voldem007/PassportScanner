@@ -118,7 +118,69 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         }
     }
     
-    @objc public func setup() {
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        startCapturing()
+        
+        if isAutoMode {
+            scanning()
+        }
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Clean cache only after using engine in 10 sec
+        DispatchQueue.global().asyncAfter(deadline: .now() + 10) {
+            MGTesseract.clearCache()
+        }
+    }
+    
+    @objc public func startScan() {
+        self.currentCountPerSession = 0
+        scanning()
+    }
+    
+    @objc public func stopScan() {
+        camera.stopCapture()
+        abortScan()
+        clearRenderView()
+    }
+    
+    private func initCamera(){
+        do {
+            // Initialize the camera
+            camera = try Camera(sessionPreset: AVCaptureSession.Preset.hd1920x1080)
+            camera.location = PhysicalCameraLocation.backFacing
+            
+            renderView = RenderView.init(frame: view.bounds)
+            view.addSubview(renderView)
+            renderView.orientation = .landscapeRight
+            
+            if !showPostProcessingFilters {
+                // Apply only the cropping
+                camera --> renderView
+                camera --> crop
+            } else {
+                // Chain the filter to the render view
+                camera --> exposure  --> highlightShadow  --> saturation --> contrast --> adaptiveThreshold --> renderView
+                // Use the same chained filters and forward these to 2 other filters
+                adaptiveThreshold --> crop --> averageColor
+            }
+            
+            if debug {
+                let debugViewFrame : CGRect = self.getOcrParsingRectDebugView()
+                let scanAreaDebug = UIView (frame: CGRect(x: debugViewFrame.origin.x, y: debugViewFrame.origin.y, width: debugViewFrame.size.width, height: debugViewFrame.size.height))
+                scanAreaDebug.backgroundColor = UIColor.red.withAlphaComponent(0.5)
+                renderView.addSubview(scanAreaDebug)
+            }
+            
+        } catch {
+            fatalError("Could not initialize rendering pipeline: \(error)")
+        }
+    }
+    
+    private func setup() {
         if self.setupCompleted {
             return
         }
@@ -200,62 +262,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         self.tesseract.setVariableValue("FALSE", forKey: "wordrec_enable_assoc")
     }
     
-    open override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        startCapturing()
-        
-        if isAutoMode {
-            scanning()
-        }
-    }
-    
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        // Clean cache only after using engine in 10 sec
-        DispatchQueue.global().asyncAfter(deadline: .now() + 10) {
-            MGTesseract.clearCache()
-        }
-    }
-    
-    func initCamera(){
-        do {
-            // Initialize the camera
-            camera = try Camera(sessionPreset: AVCaptureSession.Preset.hd1920x1080)
-            camera.location = PhysicalCameraLocation.backFacing
-            
-            if renderView == nil {
-                renderView = RenderView.init(frame: self.view.bounds)
-                self.view.addSubview(renderView)
-            } else {
-                renderView.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height)
-            }
-            renderView.orientation = .landscapeRight
-            
-            if !showPostProcessingFilters {
-                // Apply only the cropping
-                camera --> renderView
-                camera --> crop
-            } else {
-                // Chain the filter to the render view
-                camera --> exposure  --> highlightShadow  --> saturation --> contrast --> adaptiveThreshold --> renderView
-                // Use the same chained filters and forward these to 2 other filters
-                adaptiveThreshold --> crop --> averageColor
-            }
-            
-            if debug {
-                let debugViewFrame : CGRect = self.getOcrParsingRectDebugView()
-                let scanAreaDebug = UIView (frame: CGRect(x: debugViewFrame.origin.x, y: debugViewFrame.origin.y, width: debugViewFrame.size.width, height: debugViewFrame.size.height))
-                scanAreaDebug.backgroundColor = UIColor.red.withAlphaComponent(0.5)
-                renderView.addSubview(scanAreaDebug)
-            }
-            
-        } catch {
-            fatalError("Could not initialize rendering pipeline: \(error)")
-        }
-    }
-    
-    func evaluateExposure(image: UIImage){
+    private func evaluateExposure(image: UIImage){
         if self.averageColorFilter != nil {
             return
         }
@@ -288,7 +295,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         }
     }
     
-    open func preprocessedImage(for tesseract: MGTesseract, sourceImage: UIImage!) -> UIImage! {
+    private func preprocessedImage(for tesseract: MGTesseract, sourceImage: UIImage!) -> UIImage! {
         // sourceImage is the same image you sent to Tesseract above.
         // Processing is already done in dynamic filters
         if showPostProcessingFilters { return sourceImage }
@@ -340,7 +347,6 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         return CGRect(x: y, y: x, width: h, height: w)
     }
     
-    
     private func startCapturing() {
         self.setup()
         
@@ -351,9 +357,11 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         camera.startCapture()
     }
     
-    @objc public func startScanning() {
-        self.currentCountPerSession = 0
-        scanning()
+    private func clearRenderView() {
+        let subviews = renderView.subviews
+        for view in subviews {
+            view.removeFromSuperview()
+        }
     }
     
     private func scanning() {
@@ -378,34 +386,12 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         }
     }
     
-    @objc public func stopScan() {
-        camera.stopCapture()
-        abortScan()
-        clearRenderView()
-    }
-    
-    private func clearRenderView() {
-        let subviews = renderView.subviews
-        for view in subviews {
-            view.removeFromSuperview()
-        }
-    }
-    
-    /**
-     call this from your code to stop a scan or hook it to a button
-     
-     :param: sender the sender of this event
-     */
-    @IBAction open func StopScan(sender: AnyObject) {
-        self.stopScan()
-    }
-    
     /**
      Processing the image
      
      - parameter sourceImage: The image that needs to be processed
      */
-    open func processImage(sourceImage: UIImage) -> Bool {
+    private func processImage(sourceImage: UIImage) -> Bool {
         
         // resize image. Smaller images are faster to process. When letters are too big the scan quality also goes down.
         let croppedImage: UIImage = sourceImage.resizedImageToFit(in: CGSize(width: ocrParsingRect.size.width * 0.5, height: ocrParsingRect.size.height * 0.5), scaleIfSmaller: true)
@@ -458,7 +444,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
      
      - returns: The OCR result
      */
-    open func doOCR(image: UIImage) -> String {
+    private func doOCR(image: UIImage) -> String {
         // Start OCR
         self.tesseract.image = image
         
