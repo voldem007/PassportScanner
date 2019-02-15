@@ -77,7 +77,7 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     private var averageColorFilter: GPUImageAverageColor!
     private var lastExposure: CGFloat = 1.5
     private let shotsCountPerSession = 5
-    private var currentCountPerSession = 0
+    private var remindShotsCount = 0
 
     
     let exposureFilter: GPUImageExposureFilter = GPUImageExposureFilter()
@@ -348,9 +348,9 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
         camera.startCapture()
     }
     
-    @objc public func startScanning() {
-        if !isAutoMode {
-            self.currentCountPerSession = 0
+    @objc public func startScan() {
+        if !isAutoMode && remindShotsCount <= 0 {
+            remindShotsCount = shotsCountPerSession
             scanning()
         }
     }
@@ -367,8 +367,8 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
                     guard let strongSelf = self else { return }
                     if strongSelf.processImage(sourceImage: sourceImage) { return }
                     // Not successful, start another scan
-                    if strongSelf.isAutoMode || strongSelf.shotsCountPerSession > strongSelf.currentCountPerSession {
-                        strongSelf.currentCountPerSession = strongSelf.currentCountPerSession + 1
+                    if strongSelf.isAutoMode || 0 < strongSelf.remindShotsCount {
+                        strongSelf.remindShotsCount = strongSelf.remindShotsCount - 1
                         strongSelf.scanning()
                     }
                 }
