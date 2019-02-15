@@ -52,7 +52,12 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     @objc public var setupCompleted = false
     
     /// When you create your own view, then make sure you have a GPUImageView that is linked to this
-    @IBOutlet var renderView: RenderView!
+    lazy var renderView: RenderView = {
+        let renderView = RenderView.init(frame: view.bounds)
+        view.addSubview(renderView)
+        renderView.orientation = .landscapeRight
+        return renderView
+    }()
     
     /// For capturing the video and passing it on to the filters.
     var camera: Camera!
@@ -224,14 +229,6 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
             camera = try Camera(sessionPreset: AVCaptureSession.Preset.hd1920x1080)
             camera.location = PhysicalCameraLocation.backFacing
             
-            if renderView == nil {
-                renderView = RenderView.init(frame: self.view.bounds)
-                self.view.addSubview(renderView)
-            } else {
-                renderView.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height)
-            }
-            renderView.orientation = .landscapeRight
-            
             if !showPostProcessingFilters {
                 // Apply only the cropping
                 camera --> renderView
@@ -352,8 +349,10 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
     }
     
     @objc public func startScanning() {
-        self.currentCountPerSession = 0
-        scanning()
+        if !isAutoMode {
+            self.currentCountPerSession = 0
+            scanning()
+        }
     }
     
     private func scanning() {
