@@ -42,7 +42,7 @@ class ViewController: UIViewController, ProcessMRZ {
     */
     @IBAction func StartScan(sender: AnyObject) {
         let storyboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        let scanVC: MyScanViewController = storyboard.instantiateViewController(withIdentifier: "PassportScanner") as! MyScanViewController
+        let scanVC: MyScanViewController =  MyScanViewController()
         scanVC.delegate = self
         self.present(scanVC, animated: true, completion: nil)
     }

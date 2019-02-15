@@ -18,7 +18,7 @@ class MyScanViewController: PassportScannerController {
     var delegate: ProcessMRZ?
     
     @IBAction func scanManual(_ sender: Any) {
-        self.startScan()
+        self.startScanning()
     }
     
     override func viewDidLoad() {

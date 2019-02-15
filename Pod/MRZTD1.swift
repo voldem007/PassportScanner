@@ -49,7 +49,7 @@ open class MRZTD1: MRZParser {
     
     
     /// The last name from the 1st line of the MRZ (start 1, len 30, until first <<)
-    //@objc public var lastName: String = ""
+   //@objc public var lastName: String = ""
     /// The firstname from the 1st line of the MRZ (start first << len 30)
     //@objc public var firstName: String = ""
 

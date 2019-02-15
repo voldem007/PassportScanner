@@ -13,11 +13,11 @@ open class MRZParser : NSObject{
     
     @objc public var parsedMRZ: String = ""
     
-    @objc public var lastName: String = ""
-    @objc public var firstName: String = ""
     @objc public var documentType: String = ""
     @objc public var documentSubType: String = ""
     @objc public var countryCode: String = ""
+    @objc public var lastName: String = ""
+    @objc public var firstName: String = ""
     @objc public var passportNumber: String = ""
     @objc public var passportNumberIsValid = false
     @objc public var nationality: String = ""
@@ -30,7 +30,6 @@ open class MRZParser : NSObject{
     @objc public var personalNumberIsValid = false
     @objc public var dataIsValid = false
 
-    
     @objc public init(scan: String, debug: Bool = false) {
         super.init()
         parsedMRZ = scan
