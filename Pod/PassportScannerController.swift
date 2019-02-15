@@ -367,8 +367,8 @@ open class PassportScannerController: UIViewController, MGTesseractDelegate {
                     guard let strongSelf = self else { return }
                     if strongSelf.processImage(sourceImage: sourceImage) { return }
                     // Not successful, start another scan
+                    strongSelf.remindShotsCount = strongSelf.remindShotsCount - 1
                     if strongSelf.isAutoMode || 0 < strongSelf.remindShotsCount {
-                        strongSelf.remindShotsCount = strongSelf.remindShotsCount - 1
                         strongSelf.scanning()
                     }
                 }
